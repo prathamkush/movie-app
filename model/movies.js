@@ -7,7 +7,7 @@ const MovieSchema = new mongoose.Schema({
         type:String,
         required:true
     },
-    releseDate:{
+    releaseDate:{
         type:Date,
         required:true
     }

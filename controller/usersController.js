@@ -25,6 +25,71 @@ const create = (req,res,next) => {
     )
 }
 
+const login = (req,res,next) => {
+    UserModel.findOne(
+        {
+            email : req.body.email
+        },
+        (error,result) => {
+            if(error) {
+                next(error);
+            }
+            else{
+                if(!result || !bcrypt.compareSync(req.body.password, result.password)){
+                    res.status(401).json({
+                        message: "Authentication Failed !!"
+                    })
+                }
+                else{
+                    // genearting the token using jwt.sign function
+                    /*
+                        3 parameters
+                            1. Claims
+                            2. Secret Key
+                            3. Expiry time of token
+                    */
+                    const token = jwt.sign(
+                        {
+                            id: result._id
+                        },
+                        req.app.get('secret_key'),
+                        {
+                            expiresIn: "1H"
+                        }
+                    )
+                    res.status(200).json({
+                        message : "Successfully Logged-in !!",
+                        data : {
+                            user: result,
+                            token : token
+                        }
+                    })
+                }
+            }
+        }
+    )
+}
+
+// get-users
+const getUsers = (req,res,next) => {
+    UserModel.find(
+        {},
+        (error, result) => {
+            if(error){
+                next(error)
+            }
+            res.status(200).json({
+                message : "Successfully retrieved all Users",
+                Users : result
+            })
+        }
+        
+    )
+}
+
+
+
+
 
 // exporting
-module.exports = {create}
+module.exports = {create, login, getUsers}

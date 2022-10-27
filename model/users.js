@@ -20,12 +20,6 @@ const UserSchema = new mongoose.Schema({
 
 })
 
-// custom function for matching the entered password in request
-// with the one in database(hash_password- after auto decrypting it here)
-UserSchema.methods.comparePassword = function (reqst_pswd) {
-    return bcrypt.compareSync(reqst_pswd, this.password)
-}
-
 
 // pre function used to run the statements in
 // the callback function (do this before "save")

@@ -15,9 +15,11 @@ const mongoose = require("mongoose")
 // only verifying the token
 const jwt = require("jsonwebtoken")
 
+//--------------------------------------------------//
+
 // import routes 
 const userRoutes = require("./routes/usersRoutes")
-
+const movieRoutes = require("./routes/moviesRoutes")
 
 //--------------------------------------------------//
 
@@ -40,8 +42,7 @@ app.get("/welcome", (req,res) => {
     res.send("Welcome to node application")
 })
 
-// path for userRoutes
-app.use("/user", userRoutes)
+
 
 
 const uri = "mongodb+srv://pratham520:451228@cluster0.pe7oqtx.mongodb.net/movieJWT?retryWrites=true&w=majority" 
@@ -52,3 +53,20 @@ mongoose.connect(uri, {useNewUrlParser:true}).
 
 // Setting a secret key with random string for jwt initial 
 app.set("secret_key", "qwertyuiop")
+
+
+// this requires token wherever that URI is called
+const userValidation = (req, res, next) => {
+    jwt.verify(req.headers["x-access-token"],
+    req.app.get('secret_key'),
+    (error,decoded) => {
+        if(error){ 
+            next(error);  
+        }
+        next()
+    })
+}
+
+// path for userRoutes and movieRoutes
+app.use("/user", userRoutes)
+app.use("/movie",userValidation,movieRoutes)
